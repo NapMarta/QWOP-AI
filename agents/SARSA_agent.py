@@ -1,5 +1,5 @@
 
-from agent import Agent
+from agents.agent import Agent
 
 class SARSAAgent(Agent):
     def update_qval(self, curr_state, curr_action, reward, terminal, next_state=None, next_action=None):
