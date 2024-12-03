@@ -1,5 +1,6 @@
 import qwop_gym
 import gymnasium as gym
+from agents.SARSA_agent import SARSAAgent
 
 
 def get_init_env():
@@ -12,15 +13,35 @@ def get_init_env():
         reduced_action_set=True
     )
 
-    state = env.reset()
     return env
 
 
-def train(num_episodes, env, agent):
+def train_forward(num_episodes, env, agent):
     for i in range(num_episodes):
-        pass
-        # CONTINUARE DA QUI
+        episode_reward = 0
+        curr_state = agent.export_state(agent.env.reset()[0])
+        curr_action = agent.get_action(curr_state)
+
+        while True:
+            next_state, reward, terminated, truncated, info = env.step(curr_action)
+            next_state = agent.export_state(next_state)
+            next_action = agent.get_action(next_state)
+            episode_reward += reward
+
+            agent.update_qval(curr_state, curr_action, reward, terminated, next_state, next_action)
+
+            if terminated or truncated:
+                break
+
+            curr_state, curr_action = next_state, next_action
+
+        print(f'Terminato episodio {i+1} con ricompensa {episode_reward}')
 
 
-if __name__ == '__main__':
+def main(gamma=0.1, alpha=0.1, eps=0.2):
     env = get_init_env()
+    agent = SARSAAgent(env, gamma, alpha, eps)
+    train_forward(10, env, agent)
+
+
+
