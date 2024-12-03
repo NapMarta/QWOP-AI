@@ -2,7 +2,7 @@
 import numpy as np
 
 class Agent:
-    def __init__(self, env, gamma=0.99, alpha=0.01, eps=0):
+    def __init__(self, env, gamma, alpha, eps):
         self.q_values = {}
         self.gamma = gamma
         self.alpha = alpha
