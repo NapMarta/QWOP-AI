@@ -16,3 +16,15 @@ class Agent:
 
         return self.q_values[state_action]
 
+    def get_next_action(self, curr_state):
+        if np.random.rand() < self.eps:
+            # Fai esplorazione
+            next_action = self.env.action_space.sample()
+        else:
+            # Fai sfruttamento
+            # Restituisce l'indice dell'azione a cui è associato il massimo q_value
+            next_action = np.argmax([self.get_qval((curr_state, i) for i in range(9))])
+
+        return next_action
+
+
