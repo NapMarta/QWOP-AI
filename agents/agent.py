@@ -30,11 +30,9 @@ class Agent:
     def get_action(self, curr_state):
         if np.random.rand() < self.eps:
             # Fai esplorazione
-            # print('esplorazione:')
             next_action = self.env.action_space.sample()
         else:
             # Fai sfruttamento
-            # print('sfruttamento:', self.eps)
             # Restituisce l'indice dell'azione a cui è associato il massimo q_value
             q_values = []
             for i in range(9):
