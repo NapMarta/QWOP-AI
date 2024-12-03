@@ -25,6 +25,8 @@ class Agent:
             # Restituisce l'indice dell'azione a cui è associato il massimo q_value
             next_action = np.argmax([self.get_qval((curr_state, i) for i in range(9))])
 
+        # Decrementa leggermente la prob. di esplorazione
+        self.eps *= 0.99
         return next_action
 
 
