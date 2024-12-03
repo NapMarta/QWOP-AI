@@ -12,11 +12,11 @@ class Agent:
     # state_action è la tupla (S, A)
     def get_qval(self, state_action):
         if state_action not in self.q_values:
-            self.q_values[state_action] = np.random.rand(-10, 10) # ricompensa casuale, modificare valore
+            self.q_values[state_action] = np.random.rand(0, 10) # ricompensa casuale, modificare valore
 
         return self.q_values[state_action]
 
-    def get_next_action(self, curr_state):
+    def get_action(self, curr_state):
         if np.random.rand() < self.eps:
             # Fai esplorazione
             next_action = self.env.action_space.sample()
