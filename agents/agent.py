@@ -16,6 +16,7 @@ class Agent:
             self.q_values[state_action] = np.random.uniform(-10, 10) # ricompensa casuale, modificare valore
         return self.q_values[state_action]
 
+    # Mappa lo stato (matrice 12x5) in un intero univoco progressivo
     def export_state(self, state):
         st_index = -1
         for i in range(len(self.states_vect)):
@@ -27,20 +28,22 @@ class Agent:
             self.states_vect.append(state)
         return st_index
 
-    def get_action(self, curr_state):
-        if np.random.rand() < self.eps:
+    def get_action(self, curr_state, training):
+        if training and np.random.rand() < self.eps:
             # Fai esplorazione
             next_action = self.env.action_space.sample()
+            # Decrementa leggermente la prob. di esplorazione
+            self.eps *= 0.99
         else:
             # Fai sfruttamento
+            # Se sto facendo testing, non ho la componente di esplorazione: voglio fare solo sfruttamento
+            # perché mi serve valutare la policy ottenuta
             # Restituisce l'indice dell'azione a cui è associato il massimo q_value
             q_values = []
             for i in range(9):
                 q_values.append(self.get_qval((curr_state, i)))
             next_action = np.argmax(q_values)
 
-        # Decrementa leggermente la prob. di esplorazione
-        self.eps *= 0.99
         return next_action
 
 
