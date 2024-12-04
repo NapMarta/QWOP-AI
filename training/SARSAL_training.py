@@ -1,4 +1,4 @@
-from agents.SARSA_agent import SARSAAgent
+from agents.SARSAL_agent import SARSALAgent
 from .utils import *
 
 
@@ -17,7 +17,7 @@ def train(num_episodes, env, agent):
             episode_reward += reward + info['distance']/100
             # print(episode_reward)
 
-            agent.update_qval(curr_state, curr_action, reward, terminated, next_state, next_action)
+            agent.update_all(curr_state, curr_action, reward, terminated, next_state, next_action)
 
             if terminated or truncated:
                 break
@@ -27,9 +27,9 @@ def train(num_episodes, env, agent):
         print(f'Terminato episodio {i+1} con ricompensa {episode_reward}')
 
 
-def main(gamma=0.1, alpha=0.1, eps=0.2):
+def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     env = get_init_env()
-    agent = SARSAAgent(env, gamma, alpha, eps)
+    agent = SARSALAgent(env, gamma, alpha, eps, lam)
     train(10, env, agent)
     env.close()
 
