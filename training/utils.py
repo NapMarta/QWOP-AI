@@ -24,14 +24,14 @@ def _get_path():
 
     try:
         with open(file_path, 'r') as file:
-            righe = file.readlines()
-            browser_path = righe[1].strip()  
-            driver_path = righe[3].strip()  
+            row = file.readlines()
+            browser_path = row[1].strip()  
+            driver_path = row[3].strip()  
 
     except FileNotFoundError:
         print(f"Il file '{file_path}' non è stato trovato.")
     except Exception as e:
-        print(f"Si è verificato un errore: {e}")
+        print(e)
 
     print("Browser Path:", browser_path)
     print("Driver Path:", driver_path)
