@@ -61,7 +61,7 @@ def train(env, agent, num_episodes):
 
 
 def test(env, agent, num_episodes):
-    with tqdm(total=num_episodes, desc="Training Episodes") as progress_bar:
+    with tqdm(total=num_episodes, desc="Testing Episodes") as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
             curr_state = agent.export_state(agent.env.reset()[0])
