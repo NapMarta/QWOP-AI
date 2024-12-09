@@ -21,6 +21,7 @@ def train(env, agent, num_episodes):
             # Genera gli episodi fino a raggiungere uno stato finale 
             # An episode is an array of (statec, action, reward) tuples
             state_idx = agent.export_state(agent.env.reset()[0])
+            # for i in range(500):
             while True:
                 action = agent.get_action(state_idx)
                 next_state, reward_env, terminated, truncated, info = env.step(action)
@@ -59,7 +60,7 @@ def train(env, agent, num_episodes):
             progress_bar.set_postfix({'Reward': episode_reward})
 
 
-def test(num_episodes, env, agent):
+def test(env, agent, num_episodes):
     with tqdm(total=num_episodes, desc="Training Episodes") as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
@@ -91,9 +92,9 @@ if __name__ == "__main__":
     # Create a new agent
     agentMC = MCAgent(env = env)    
     print("Training: ")
-    train(env, agentMC, 10)
+    train(env, agentMC, 1)
 
     print("Testing:")
-    test(10, env, agentMC)
+    test(env, agentMC, 1)
     env.close()
 
