@@ -3,12 +3,17 @@ import numpy as np
 
 class Agent:
     def __init__(self, env, gamma, alpha, eps):
+        # dizionario dove la chiave è (id_stato, azione) e il valore è l'action-value
         self.q_values = dict()
         self.states_vect = []
         self.gamma = gamma
         self.alpha = alpha
         self.eps = eps
         self.env = env
+
+    def reward_function(self, reward_env, info):
+        reward = reward_env + info['distance']/100
+        return reward
 
     # state_action è la tupla (S, A)
     def get_qval(self, state_action):
