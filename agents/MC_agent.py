@@ -1,44 +1,40 @@
 
 import numpy as np
-from agent import Agent
+from agents import Agent
 import qwop_gym
 import gymnasium as gym
 from collections import defaultdict
 
 class MCAgent(Agent):
     def __init__(self, env, gamma=1.0, alpha=0, eps=0.1):
-        # il fattore alpha non serve?
+        # il fattore alpha non serve
         super().__init__(env, gamma, alpha, eps)
+        self.n_actions = 9
+        self.policy_table = defaultdict(lambda: np.ones(self.n_actions) * (self.eps / self.n_actions))
 
 
-    
-    def _epsilon_soft_policy(self, state):
-        pass
-    
-    
-
-    
+    def get_action(self, curr_state):
+        probs = self.policy_table[curr_state]
+        probs /= np.sum(probs)  # Normalizza prima di usarle
+        action = np.random.choice(np.arange(len(probs)), p=probs)
+        return action
 
 
-def get_init_env():
-    env = gym.make(
-        "QWOP-v1",
-        browser="C:/Program Files/Google/Chrome/Application/chrome.exe",
-        driver="C:/Program Files (x86)/chromedriver-win64/chromedriver.exe",
-        auto_draw=True,
-        stat_in_browser=True,
-        reduced_action_set=True
-    )
+    # Funzione per aggiornare le probabilità della policy ϵ-greedy
+    def update_policy(self, state):
+        # Aggiorna la policy per essere ϵ-greedy rispetto a Q(s, a)
+        q_values = [self.get_qval((state, a)) for a in range(self.n_actions)]
+        best_action = np.argmax(q_values)
+        for a in range(self.n_actions):
+            if a == best_action:
+                self.policy_table[state][a] = 1 - self.eps + (self.eps / self.n_actions)
+            else:
+                self.policy_table[state][a] = self.eps / self.n_actions
 
-    state = env.reset()
-    return env
+        # Normalizza le probabilità per evitare errori
+        self.policy_table[state] /= np.sum(self.policy_table[state])
 
 
-if __name__ == "__main__":
-    env = get_init_env()
-    
-    # Create a new agent
-    agentMC = MCAgent(env= env)
 
 
 
