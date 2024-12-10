@@ -26,8 +26,6 @@ class QLAgent(Agent):
         else:   
             max_q_next = self.get_qval((next_state, next_action))
         
-        # print(max_q_next)
-            
         td_target = reward + self.gamma * max_q_next
         td_error = td_target - self.get_qval((curr_state, action))
         self.q_values[(curr_state, action)] += self.alpha * td_error

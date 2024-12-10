@@ -70,7 +70,6 @@ if __name__ == "__main__":
 
     env = utils.get_init_env()
     
-    # Create a new agent
     agentQL = QLAgent(env, gamma, alpha, eps)    
     print("Training con Q-Learning:")
     training(env, agentQL, episodes)
