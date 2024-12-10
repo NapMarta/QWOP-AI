@@ -26,14 +26,14 @@ def training(env, agent, episodes):
             curr_state = next_state
             curr_action = agent.get_action(curr_state, training)
 
-            print(f'Terminato episodio {i+1} con ricompensa {episode_reward}')
+        print(f'Terminato episodio {i+1} con ricompensa {episode_reward}')
 
 
 def testing(env, agent, test_episodes):
     return 
 
 
-def main():
+if __name__ == "__main__":
     #Scegliere valori ottimali
     gamma=0.1
     alpha=0.1
@@ -43,7 +43,7 @@ def main():
     env = utils.get_init_env()
     
     # Create a new agent
-    agentQL = QLAgent(env = env)    
+    agentQL = QLAgent(env, gamma, alpha, eps)    
     print("Training:")
     training(env, agentQL, episodes)
 
