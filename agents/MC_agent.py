@@ -1,6 +1,6 @@
 
 import numpy as np
-from agents import Agent
+from agents.agent import Agent
 import qwop_gym
 import gymnasium as gym
 from collections import defaultdict
