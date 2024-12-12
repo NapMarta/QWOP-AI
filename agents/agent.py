@@ -11,6 +11,7 @@ class Agent:
         self.eps = eps
         self.env = env
 
+    # Funzione di ricompensa personalizzata
     def reward_function(self, reward_env, info):
         reward = reward_env + info['distance']/100
         return reward
@@ -33,8 +34,8 @@ class Agent:
             self.states_vect.append(state)
         return st_index
 
-    def get_action(self, curr_state, training):
-        if training and np.random.rand() < self.eps:
+    def get_action(self, curr_state, exploration):
+        if exploration and np.random.rand() < self.eps:
             # Fai esplorazione
             next_action = self.env.action_space.sample()
             # Decrementa leggermente la prob. di esplorazione
