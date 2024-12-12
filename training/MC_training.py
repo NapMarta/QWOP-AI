@@ -23,7 +23,7 @@ def train(env, agent, num_episodes):
             state_idx = agent.export_state(agent.env.reset()[0])
             # for i in range(500):
             while True:
-                action = agent.get_action(state_idx)
+                action = agent.get_action(state_idx, exploration = True)
                 next_state, reward_env, terminated, truncated, info = env.step(action)
                 reward = agent.reward_function(reward_env, info)
                 episodes.append((state_idx, action, reward))
