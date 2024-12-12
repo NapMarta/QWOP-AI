@@ -36,7 +36,7 @@ def train(env, agent, num_episodes):
             visited_state_actions = set()  # Per tracciare la prima visita
 
 
-            # Itero dall'ultimo al primo episodio
+            # Itero dall'ultimo step dell'episodio
             for t, (state, action, reward) in enumerate(reversed(episodes)): 
                 if (state, action) not in visited_state_actions:
                     visited_state_actions.add((state, action))
