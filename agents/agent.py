@@ -2,12 +2,11 @@
 import numpy as np
 
 class Agent:
-    def __init__(self, env, gamma, alpha, eps):
+    def __init__(self, env, gamma, eps):
         # dizionario dove la chiave è (id_stato, azione) e il valore è l'action-value
         self.q_values = dict()
         self.states_vect = []
         self.gamma = gamma
-        self.alpha = alpha
         self.eps = eps
         self.env = env
 
