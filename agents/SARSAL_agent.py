@@ -3,7 +3,8 @@ from agents.agent import Agent
 
 class SARSALAgent(Agent):
     def __init__(self, env, gamma, alpha, eps, lam):
-        super().__init__(env, gamma, alpha, eps)
+        super().__init__(env, gamma, eps)
+        self.alpha = alpha
         self.lam = lam
         self.et_values = dict()
 
@@ -26,7 +27,7 @@ class SARSALAgent(Agent):
         self.et_values[state_action] += 1
 
 
-    def update_all(self, curr_state, curr_action, reward, terminal, next_state=None, next_action=None):
+    def update_qval(self, curr_state, curr_action, reward, terminal, next_state=None, next_action=None):
         if terminal:
             td_target = reward
         else:

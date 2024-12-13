@@ -2,6 +2,11 @@
 from agents.agent import Agent
 
 class SARSAAgent(Agent):
+    def __init__(self, env, gamma, alpha, eps):
+        super().__init__(env, gamma, eps)
+        self.alpha = alpha
+
+
     def update_qval(self, curr_state, curr_action, reward, terminal, next_state=None, next_action=None):
         if terminal:
             td_target = reward
