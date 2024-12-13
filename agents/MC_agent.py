@@ -6,9 +6,9 @@ import gymnasium as gym
 from collections import defaultdict
 
 class MCAgent(Agent):
-    def __init__(self, env, gamma=1.0, alpha=0, eps=0.1):
+    def __init__(self, env, gamma=1.0, eps=0.1):
         # il fattore alpha non serve
-        super().__init__(env, gamma, alpha, eps)
+        super().__init__(env, gamma, eps)
         self.n_actions = 9
         self.policy_table = defaultdict(lambda: np.ones(self.n_actions) * (self.eps / self.n_actions))
 
