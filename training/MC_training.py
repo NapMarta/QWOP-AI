@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from agents.MC_agent import MCAgent
 import numpy as np
 from tqdm import tqdm
@@ -14,6 +18,7 @@ def train(env, agent, num_episodes):
     returns_sum = defaultdict(float)
     returns_count = defaultdict(float)
     episode_reward = 0
+    game_scores = []
     
     with tqdm(total=num_episodes, desc="Training Episodes") as progress_bar:
         for _ in range(num_episodes):
@@ -21,8 +26,8 @@ def train(env, agent, num_episodes):
             # Genera gli episodi fino a raggiungere uno stato finale 
             # An episode is an array of (statec, action, reward) tuples
             state_idx = agent.export_state(agent.env.reset()[0])
-            # for i in range(500):
-            while True:
+            for i in range(1000):
+            # while True:
                 action = agent.get_action(state_idx, exploration = True)
                 next_state, reward_env, terminated, truncated, info = env.step(action)
                 reward = agent.reward_function(reward_env, info)
@@ -30,8 +35,6 @@ def train(env, agent, num_episodes):
                 if terminated or truncated:
                     break
                 state_idx = agent.export_state(next_state)
-
-            
 
             visited_state_actions = set()  # Per tracciare la prima visita
 
@@ -56,11 +59,16 @@ def train(env, agent, num_episodes):
 
                     agent.update_policy(state)
 
+            game_scores.append(episode_reward)
             progress_bar.update(1)
             progress_bar.set_postfix({'Reward': episode_reward})
+    
+    return game_scores
+
 
 
 def test(env, agent, num_episodes):
+    game_scores = []
     with tqdm(total=num_episodes, desc="Testing Episodes") as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
@@ -81,9 +89,12 @@ def test(env, agent, num_episodes):
 
                 curr_state, curr_action = next_state, next_action
 
+            game_scores.append(episode_reward)
             progress_bar.update(1)
             progress_bar.set_postfix({'Reward': episode_reward})
-            
+        
+    
+    return game_scores
 
 
 if __name__ == "__main__":
@@ -92,9 +103,18 @@ if __name__ == "__main__":
     # Create a new agent
     agentMC = MCAgent(env = env)    
     print("Training: ")
-    train(env, agentMC, 1)
+    game_scores_train = train(env, agentMC, 3)
+    utils.plot_score(game_scores_train, "Training", "pretrained_models/model_MC/plot_train.png")
 
+    utils.save_model(agentMC.q_values, "pretrained_models/model_MC/q_values.json")
+
+    agentMC.q_values = utils.load_model("pretrained_models/model_MC/q_values.json")
+    
     print("Testing:")
-    test(env, agentMC, 1)
+    game_scores_test = test(env, agentMC, 1)
+
+    utils.plot_score(game_scores_test, "Testing", "pretrained_models/model_MC/plot_test.png")
+    utils.plot_value_function(agentMC, "pretrained_models/model_MC/plot_valuefunction.png")
+
     env.close()
 

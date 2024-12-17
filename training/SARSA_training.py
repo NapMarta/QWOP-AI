@@ -6,14 +6,17 @@ from .utils import *
 
 
 def train(num_episodes, env, agent):
-    worker(num_episodes, env, agent, training=True)
+    game_scores = worker(num_episodes, env, agent, training=True)
+    return game_scores
 
 
 def test(num_episodes, env, agent):
-    worker(num_episodes, env, agent, training=False)
+    game_scores = worker(num_episodes, env, agent, training=False)
+    return game_scores
 
 
 def worker(num_episodes, env, agent, training):
+    game_scores = []
     with tqdm(total=num_episodes, desc="Training Episodes") as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
@@ -39,8 +42,11 @@ def worker(num_episodes, env, agent, training):
 
                 curr_state, curr_action = next_state, next_action
 
+            game_scores.append(episode_reward)
             progress_bar.update(1)
             progress_bar.set_postfix({'Reward': episode_reward})
+    
+    return game_scores
 
 
 # lam è utilizzato solo se algo == 'sarsaL'
@@ -56,8 +62,18 @@ def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     else:
         return
 
-    train(5, env, agent)
-    test(1, env, agent)
+    game_scores_train = train(5, env, agent)
+    plot_score(game_scores_train, "Training", f"pretrained_models/model_{algo}/plot_train.png")
+    
+    game_scores_test = test(1, env, agent)
+
+    plot_score(game_scores_test, "Testing", f"pretrained_models/model_{algo}/plot_test.png")
+    plot_value_function(agent, f"pretrained_models/model_{algo}/plot_valuefunction.png")
+    
+    save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
+
+    agent.q_values = load_model(f"pretrained_models/model_{algo}/q_values.json")
+    
     env.close()
 
 
