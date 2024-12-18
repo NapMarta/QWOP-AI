@@ -1,4 +1,5 @@
 
+import json
 import numpy as np
 
 class Agent:
@@ -51,4 +52,18 @@ class Agent:
 
         return next_action
 
+
+    def save_model(self, filename):
+        q_table_str_keys = {str(key): value for key, value in self.q_values.items()}
+
+        with open(filename, "w") as file:
+            json.dump(q_table_str_keys, file)
+
+
+    def load_model(self, filename):
+        with open(filename, "r") as file:
+            q_table_str_keys = json.load(file)
+
+        self.q_values = {eval(key): value for key, value in q_table_str_keys.items()}
+        
 

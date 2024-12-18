@@ -1,4 +1,5 @@
 
+import json
 import numpy as np
 from agents.agent import Agent
 import qwop_gym
@@ -10,6 +11,7 @@ class MCAgent(Agent):
         # il fattore alpha non serve
         super().__init__(env, gamma, eps)
         self.n_actions = 9
+        # key - lista di probabilità per azioni
         self.policy_table = defaultdict(lambda: np.ones(self.n_actions) * (self.eps / self.n_actions))
 
 
@@ -42,6 +44,31 @@ class MCAgent(Agent):
         self.policy_table[state] /= np.sum(self.policy_table[state])
 
 
+    def save_model(self, filename_qvalues, filename_policy):
+        q_table_str_keys = {str(key): value for key, value in self.q_values.items()}
+
+        with open(filename_qvalues, "w") as file:
+            json.dump(q_table_str_keys, file)
 
 
+        policy_keys = {str(key): value.tolist() for key, value in self.policy_table.items()}
+        
+
+        with open(filename_policy, "w") as file:
+            # print(policy_keys)
+            json.dump(policy_keys, file)
+
+
+    def load_model(self, filename_qvalues, filename_policy):
+        with open(filename_qvalues, "r") as file:
+            q_table_str_keys = json.load(file)
+
+        self.q_values = {eval(key): value for key, value in q_table_str_keys.items()}
+        
+        with open(filename_policy, "r") as file:
+            tmp_policy = json.load(file)
+
+        # in questo modo se lo stato non era presente, usiamo la probabilità di default
+        for key, value in tmp_policy.items():
+            self.policy_table[str(key)] = value
 

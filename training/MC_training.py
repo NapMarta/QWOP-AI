@@ -103,18 +103,18 @@ if __name__ == "__main__":
     # Create a new agent
     agentMC = MCAgent(env = env)    
     print("Training: ")
-    game_scores_train = train(env, agentMC, 3)
+    game_scores_train = train(env, agentMC, 1)
     utils.plot_score(game_scores_train, "Training", "pretrained_models/model_MC/plot_train.png")
 
-    utils.save_model(agentMC.q_values, "pretrained_models/model_MC/q_values.json")
+    agentMC.save_model("pretrained_models/model_MC/q_values.json", "pretrained_models/model_MC/policy_table.json")
 
-    agentMC.q_values = utils.load_model("pretrained_models/model_MC/q_values.json")
+    agentMC.load_model("pretrained_models/model_MC/q_values.json", "pretrained_models/model_MC/policy_table.json")
     
     print("Testing:")
-    game_scores_test = test(env, agentMC, 1)
+    game_scores_test = test(env, agentMC, 2)
 
     utils.plot_score(game_scores_test, "Testing", "pretrained_models/model_MC/plot_test.png")
-    utils.plot_value_function(agentMC, "pretrained_models/model_MC/plot_valuefunction.png")
+    # utils.plot_value_function(agentMC, "pretrained_models/model_MC/plot_valuefunction.png")
 
     env.close()
 

@@ -106,20 +106,3 @@ def plot_score(game_scores, title, filename):
     plt.savefig(filename)
     plt.show()
 
-
-def save_model(Q, filename):
-    q_table_str_keys = {str(key): value for key, value in Q.items()}
-
-    with open(filename, "w") as file:
-        json.dump(q_table_str_keys, file)
-
-
-def load_model(filename):
-    with open(filename, "r") as file:
-        q_table_str_keys = json.load(file)
-
-    Q = {eval(key): value for key, value in q_table_str_keys.items()}
-    
-    return Q
-
-
