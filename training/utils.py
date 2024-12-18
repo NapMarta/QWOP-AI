@@ -7,20 +7,32 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-def get_init_env():
-
+def get_init_env(speed_rew_mult=None, time_cost__mult=None, frames_per_step=None, success_reward=None, failure_cost=None):
     browser_path, driver_path = _get_path()
 
-    env = gym.make(
-        "QWOP-v1",
-        browser = browser_path,
-        driver = driver_path,
-        auto_draw = True,
-        stat_in_browser = True,
-        reduced_action_set = True
-    )
+    # Dizionario dei parametri da passare a gym.make
+    gym_kwargs = {
+        "browser": browser_path,
+        "driver": driver_path,
+        "auto_draw": True,
+        "stat_in_browser": True,
+        "reduced_action_set": True
+    }
 
+    if speed_rew_mult is not None:
+        gym_kwargs["speed_rew_mult"] = speed_rew_mult
+    if time_cost__mult is not None:
+        gym_kwargs["time_cost__mult"] = time_cost__mult
+    if frames_per_step is not None:
+        gym_kwargs["frames_per_step"] = frames_per_step
+    if success_reward is not None:
+        gym_kwargs["success_reward"] = success_reward
+    if failure_cost is not None:
+        gym_kwargs["failure_cost"] = failure_cost
+
+    env = gym.make("QWOP-v1", **gym_kwargs)
     return env
+
 
 def _get_path():
     file_path = "config_env.txt"
