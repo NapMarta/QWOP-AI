@@ -76,6 +76,18 @@ def get_best_combination(game_scores_dict):
     return max(last_scores, key=last_scores.get)
 
 
+def create_agent_by_combination(algo, env, combination):
+    if algo == 'sarsa':
+        agent = SARSAAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
+    elif algo == 'sarsaL':
+        agent = SARSALAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'], combination['lambda'])
+    elif algo == 'ql':
+        agent = QLAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
+    else:
+        agent = None
+
+    return agent
+
 
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
@@ -85,34 +97,31 @@ def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     game_scores_dict, agents_dict = {}, {}
     hyperparams = get_hyperparams(algo)
 
-    i = 1
-    for combination in hyperparams:
-        if algo == 'sarsa':
-            agent = SARSAAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
-        elif algo == 'sarsaL':
-            agent = SARSALAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'], combination['lambda'])
-        elif algo == 'ql':
-            agent = QLAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
-        else:
-            return
+    for i_comb, combination in enumerate(hyperparams, start=1):
+        agent_for_training = create_agent_by_combination(algo, env, combination)
 
         # Lista dei guadagni per ogni episodio
-        game_scores = train(num_training_episodes, env, agent)
-        agent.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i}.json")
+        game_scores = train(num_training_episodes, env, agent_for_training)
+        agent_for_training.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i_comb}.json")
 
         # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
         # episodi di training
         game_scores_dict[tuple(combination.items())] = game_scores
 
         # Dizionario degli agenti creati per ogni combinazione di parametri
-        agents_dict[tuple(combination.items())] = agent
+        agents_dict[tuple(combination.items())] = agent_for_training
 
-        i += 1
 
     # Plot dei risultati del training
-    plot_score(game_scores_dict, f"{algo} Training Performance", f"pretrained_models/model_{algo}/plot_train.png")
+    plot_score(game_scores_dict, f"{algo} Training performance", f"pretrained_models/model_{algo}/plot_train.png")
 
     best_combination = get_best_combination(game_scores_dict)
+    agent_for_testing = create_agent_by_combination(algo, env, best_combination)
+    game_scores = test(num_training_episodes, env, agent_for_testing)
+    game_scores_dict[tuple(combination.items())] = game_scores
+    plot_score_test(game_scores_dict, f"{algo} Testing performance", f"pretrained_models/model_{algo}/plot_test.png")
+
+
 
     # print(agent.gamma)
     # print("Optimal Parameters:", params)
