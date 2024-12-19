@@ -96,7 +96,7 @@ def test(env, agent, num_episodes):
     
     return game_scores
 
-def train_and_plot(algo, param_combinations, env, num_episodes, plot_filename):
+def train_and_plot(param_combinations, env, num_episodes, plot_filename):
     
     game_scores_dict = {}
     agents_dict = {}

@@ -93,8 +93,6 @@ def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
         {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7},
         {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8},
         {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9},
-        {"gamma": 0.4, "alpha": 0.9, "epsilon": 0.8},
-        {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9}
     ]
 
     param_combinations_sarsaL = [
