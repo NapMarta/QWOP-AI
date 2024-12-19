@@ -98,7 +98,7 @@ def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
 
         # Lista dei guadagni per ogni episodio
         game_scores = train(num_training_episodes, env, agent)
-        # agent.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i}.json")
+        agent.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i}.json")
 
         # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
         # episodi di training

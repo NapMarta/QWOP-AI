@@ -77,10 +77,10 @@ def plot_score(game_scores, title, filename):
             f"α={params['alpha']}, "
             f"ε={params['epsilon']}"
         )
-    if 'lambda' in params:
-        label += f", λ={params['lambda']}"
+        if 'lambda' in params:
+            label += f", λ={params['lambda']}"
 
-    plt.plot(scores, label=label)
+        plt.plot(scores, label=label)
 
     plt.xlabel("Episode")
     plt.ylabel("Total reward")
