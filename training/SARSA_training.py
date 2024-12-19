@@ -2,22 +2,21 @@ from agents.SARSA_agent import SARSAAgent
 from agents.SARSAL_agent import SARSALAgent
 from agents.QL_agent import QLAgent
 from tqdm import tqdm
-from utils import *
+from .utils import *
 
 
 def train(num_episodes, env, agent):
-    game_scores = worker(num_episodes, env, agent, training=True)
-    return game_scores
+    return worker(num_episodes, env, agent, training=True)
 
 
 def test(num_episodes, env, agent):
-    game_scores = worker(num_episodes, env, agent, training=False)
-    return game_scores
+    return worker(num_episodes, env, agent, training=False)
 
 
 def worker(num_episodes, env, agent, training):
     game_scores = []
-    with tqdm(total=num_episodes, desc="Training Episodes") as progress_bar:
+    desc = "Training episodes:" if training else "Testing episode:"
+    with tqdm(total=num_episodes, desc=desc) as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
             curr_state = agent.export_state(agent.env.reset()[0])
@@ -50,92 +49,95 @@ def worker(num_episodes, env, agent, training):
 
 
 def train_and_plot(algo, param_combinations, env, num_episodes, plot_filename):
-    
-    game_scores_dict = {}
-    agents_dict = {}
+    pass
+    #
+    #
+    # # Find the best parameter configuration
+    # best_params = max(
+    #     game_scores_dict.items(),
+    #     key=lambda item: sum(item[1]) / len(item[1])  # Compute average score
+    # )[0]
+    #
+    # # Convert the tuple of parameters back to a dictionary
+    # best_params_dict = dict(best_params)
+    #
+    # # Return the agent with the best parameters
+    # best_agent = agents_dict[best_params]
+    #
+    # return best_agent, best_params_dict
 
-    for params in param_combinations:
-        if algo == 'sarsa':
-            agent = SARSAAgent(env, params['gamma'], params['alpha'], params['epsilon'])
-        elif algo == 'sarsaL':
-            agent = SARSALAgent(env, params['gamma'], params['alpha'], params['epsilon'], params['lambda'])
-        elif algo == 'ql':
-            agent = QLAgent(env, params['gamma'], params['alpha'], params['epsilon'])
-        else:
-            return
 
-        game_scores = train(num_episodes, env, agent)
-        game_scores_dict[tuple(params.items())] = game_scores
-        agents_dict[tuple(params.items())] = agent
+def get_best_combination(game_scores_dict):
+    last_scores = dict()
+    for combination, scores in game_scores_dict.items():
+        last_scores[combination] = scores[len(scores) - 1]
 
-    plot_score(game_scores_dict, f"{algo} Training Performance", plot_filename)
+    # Restituisce la combinazione che ha consentito di ottenere il massimo last score
+    return max(last_scores, key=last_scores.get)
 
-    # Find the best parameter configuration
-    best_params = max(
-        game_scores_dict.items(),
-        key=lambda item: sum(item[1]) / len(item[1])  # Compute average score
-    )[0]
-
-    # Convert the tuple of parameters back to a dictionary
-    best_params_dict = dict(best_params)
-
-    # Return the agent with the best parameters
-    best_agent = agents_dict[best_params]
-
-    return best_agent, best_params_dict
 
 
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     env = get_init_env()
+    num_training_episodes, num_testing_episodes = 2, 1
 
-    param_combinations_ql_sarsa = [
-        {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7},
-        {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8},
-        {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9},
-    ]
+    game_scores_dict, agents_dict = {}, {}
+    hyperparams = get_hyperparams(algo)
 
-    param_combinations_sarsaL = [
-        {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7, "lambda": 0.2},
-        {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8, "lambda": 0.5},
-        {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9, "lambda": 0.9},
-    ]
-    
-    episodes = 3
+    i = 1
+    for combination in hyperparams:
+        if algo == 'sarsa':
+            agent = SARSAAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
+        elif algo == 'sarsaL':
+            agent = SARSALAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'], combination['lambda'])
+        elif algo == 'ql':
+            agent = QLAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
+        else:
+            return
 
-    if algo == 'sarsa':
-        agent, params = train_and_plot(algo, param_combinations_ql_sarsa, env, episodes, f"pretrained_models/model_{algo}/plot_train.png")
-    elif algo == 'sarsaL':
-        agent, params = train_and_plot(algo, param_combinations_sarsaL, env, episodes, f"pretrained_models/model_{algo}/plot_train.png")
-    elif algo == 'ql':
-        agent, params = train_and_plot(algo, param_combinations_ql_sarsa, env, episodes, f"pretrained_models/model_{algo}/plot_train.png")
-    else:
-        return
-    
-    print(agent.gamma)
-    print("Optimal Parameters:", params)
-    
-    game_scores_test = test(1, env, agent)
+        # Lista dei guadagni per ogni episodio
+        game_scores = train(num_training_episodes, env, agent)
+        # agent.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i}.json")
 
-    plot_score_test(game_scores_test, "Testing", f"pretrained_models/model_{algo}/plot_test.png")
-    # plot_value_function(agent, f"pretrained_models/model_{algo}/plot_valuefunction.png")
-    
-    agent.save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
+        # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
+        # episodi di training
+        game_scores_dict[tuple(combination.items())] = game_scores
 
+        # Dizionario degli agenti creati per ogni combinazione di parametri
+        agents_dict[tuple(combination.items())] = agent
 
-    game_scores_train = train(5, env, agent)
-    plot_score(game_scores_train, "Training", f"pretrained_models/model_{algo}/plot_train.png")
+        i += 1
 
-    game_scores_test = test(1, env, agent)
+    # Plot dei risultati del training
+    plot_score(game_scores_dict, f"{algo} Training Performance", f"pretrained_models/model_{algo}/plot_train.png")
 
-    plot_score_test(game_scores_test, "Testing", f"pretrained_models/model_{algo}/plot_test.png")
-    # plot_value_function(agent, f"pretrained_models/model_{algo}/plot_valuefunction.png")
-    
-    agent.save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
+    best_combination = get_best_combination(game_scores_dict)
 
-    agent.q_values = agent.load_model(f"pretrained_models/model_{algo}/q_values.json")
-    
+    # print(agent.gamma)
+    # print("Optimal Parameters:", params)
+
+    # game_scores_test = test(num_testing_episodes, env, agent)
+    #
+    # plot_score_test(game_scores_test, "Testing", f"pretrained_models/model_{algo}/plot_test.png")
+    # agent.save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
+    #
+    #
+    # game_scores_train = train(5, env, agent)
+    # plot_score(game_scores_train, "Training", f"pretrained_models/model_{algo}/plot_train.png")
+    #
+    # game_scores_test = test(2, env, agent)
+    #
+    # plot_score_test(game_scores_test, "Testing", f"pretrained_models/model_{algo}/plot_test.png")
+    # # plot_value_function(agent, f"pretrained_models/model_{algo}/plot_valuefunction.png")
+    #
+    # agent.save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
+    #
+    # agent.q_values = agent.load_model(f"pretrained_models/model_{algo}/q_values.json")
+    #
     env.close()
+
+
 
 if __name__ == "__main__":
     main("sarsa")

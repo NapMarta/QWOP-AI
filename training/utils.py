@@ -65,57 +65,27 @@ def get_actionValue(Q):
     return V
 
 
-def plot_value_function(agents, filename, title="Value Function"):
-    V = get_actionValue(agents.q_values)
-
-    # Min e Max per la defiizione degli assi
-    min_x = min(k[0] for k in V.keys())
-    max_x = max(k[0] for k in V.keys())
-    min_y = min(k[1] for k in V.keys())
-    max_y = max(k[1] for k in V.keys())
-
-    x_range = np.arange(min_x, max_x + 1)
-    y_range = np.arange(min_y, max_y + 1)
-    X, Y = np.meshgrid(x_range, y_range)
-
-    Z = np.apply_along_axis(lambda _: V.get((_[0], _[1]), 0.0), 2, np.dstack([X, Y]))
-
-    # Plot della value function
-    fig = plt.figure(figsize=(15, 8))
-    ax = fig.add_subplot(111, projection='3d')
-    surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1,
-                        cmap=matplotlib.cm.coolwarm, vmin=-1.0, vmax=1.0)
-    ax.set_xlabel('Player Sum')
-    ax.set_ylabel('Dealer Showing')
-    ax.set_zlabel('Value')
-    ax.set_title(title)
-    ax.view_init(ax.elev, -120)
-    fig.colorbar(surf)
-
-    plt.savefig(filename)
-    plt.show()
-
-
-
 def plot_score(game_scores, title, filename):
     plt.figure(figsize=(12, 8))
+    num_episodes = len(game_scores)
+    plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
 
-    # Iterate through parameter configurations and corresponding scores
     for params_tuple, scores in game_scores.items():
         params = dict(params_tuple)
         label = (
-            f"gamma={params['gamma']}, "
-            f"alpha={params['alpha']}, "
-            f"epsilon={params['epsilon']}, "
-            f"lambda={params['lambda'] if 'lambda' in params else '-'}"
+            f"γ={params['gamma']}, "
+            f"α={params['alpha']}, "
+            f"ε={params['epsilon']}"
         )
-        plt.plot(scores, label=label)
+    if 'lambda' in params:
+        label += f", λ={params['lambda']}"
+
+    plt.plot(scores, label=label)
 
     plt.xlabel("Episode")
-    plt.ylabel("Score")
+    plt.ylabel("Total reward")
     plt.title(title)
-    plt.legend(title="Parameters", loc="best")
-    plt.grid(True)
+    plt.legend(title="Hyperparameters", loc="best")
     plt.savefig(filename)
     plt.show()
 
@@ -128,4 +98,26 @@ def plot_score_test(game_scores, title, filename):
     plt.title(title)
     plt.savefig(filename)
     plt.show()
-    
+
+
+def get_hyperparams(algo):
+    if algo == 'mc':
+        return [
+            {"gamma": 0.1, "epsilon": 0.2},
+            {"gamma": 0.5, "epsilon": 0.3},
+            {"gamma": 0.9, "epsilon": 0.1},
+        ]
+    elif algo == 'sarsa' or algo =='ql':
+        return [
+            {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7},
+            {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8},
+            {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9},
+        ]
+    elif algo == 'sarsaL':
+        return [
+        {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7, "lambda": 0.2},
+        {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8, "lambda": 0.5},
+        {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9, "lambda": 0.9},
+    ]
+    else: return None
+
