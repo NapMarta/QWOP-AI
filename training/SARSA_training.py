@@ -122,6 +122,17 @@ def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     
     agent.save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
 
+
+    game_scores_train = train(5, env, agent)
+    plot_score(game_scores_train, "Training", f"pretrained_models/model_{algo}/plot_train.png")
+
+    game_scores_test = test(1, env, agent)
+
+    plot_score_test(game_scores_test, "Testing", f"pretrained_models/model_{algo}/plot_test.png")
+    # plot_value_function(agent, f"pretrained_models/model_{algo}/plot_valuefunction.png")
+    
+    agent.save_model(agent.q_values, f"pretrained_models/model_{algo}/q_values.json")
+
     agent.q_values = agent.load_model(f"pretrained_models/model_{algo}/q_values.json")
     
     env.close()
