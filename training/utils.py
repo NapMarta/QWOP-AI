@@ -98,6 +98,29 @@ def plot_value_function(agents, filename, title="Value Function"):
 
 
 def plot_score(game_scores, title, filename):
+    plt.figure(figsize=(12, 8))
+
+    # Iterate through parameter configurations and corresponding scores
+    for params_tuple, scores in game_scores.items():
+        params = dict(params_tuple)
+        label = (
+            f"gamma={params['gamma']}, "
+            f"alpha={params['alpha']}, "
+            f"epsilon={params['epsilon']}, "
+            f"lambda={params['lambda'] if 'lambda' in params else '-'}"
+        )
+        plt.plot(scores, label=label)
+
+    plt.xlabel("Episode")
+    plt.ylabel("Score")
+    plt.title(title)
+    plt.legend(title="Parameters", loc="best")
+    plt.grid(True)
+    plt.savefig(filename)
+    plt.show()
+
+
+def plot_score_test(game_scores, title, filename):
     plt.figure(figsize=(10, 10))
     plt.plot(game_scores, label="Score per Episode")
     plt.xlabel("Episode")
@@ -105,4 +128,4 @@ def plot_score(game_scores, title, filename):
     plt.title(title)
     plt.savefig(filename)
     plt.show()
-
+    
