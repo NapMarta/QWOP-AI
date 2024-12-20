@@ -100,7 +100,7 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
 
     for algo in algos:
         tmp_res = worker(algo, gamma, alpha, eps, lam)
-        best_by_algo[algo, tmp_res[0]] = [tmp_res[1], tmp_res[2]]
+        best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
     print(best_by_algo['sarsa'])
 
