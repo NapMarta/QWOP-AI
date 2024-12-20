@@ -92,15 +92,17 @@ def worker(algo, gamma, alpha, eps, lam):
 
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
-    algos = ['mc', 'sarsa', 'sarsaL', 'ql']
+    algos = ['sarsa']
+    # algos = ['mc', 'sarsa', 'sarsaL', 'ql']
 
-    # Dizionario di coppie (k, v), con k = algoritmo, v = [best_combination, best_combination_scores_training, game_scores_testing]
+    # Dizionario di coppie (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores_training, game_scores_testing]
     best_by_algo = dict()
 
     for algo in algos:
-        best_by_algo[algo] = worker(algo, gamma, alpha, eps, lam)
+        tmp_res = worker(algo, gamma, alpha, eps, lam)
+        best_by_algo[algo, tmp_res[0]] = [tmp_res[1], tmp_res[2]]
 
-    print(best_by_algo['mc'])
+    print(best_by_algo['sarsa'])
 
 if __name__ == '__main__':
     main()
