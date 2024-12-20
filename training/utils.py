@@ -64,6 +64,15 @@ def get_actionValue(Q):
 
     return V
 
+def get_algo_str(algo):
+    if algo == 'mc':
+        return 'Monte-Carlo'
+    elif algo == 'sarsaL':
+        return 'SARSA(λ)'
+    elif algo == 'sarsa':
+        return 'SARSA'
+    elif algo == 'ql':
+        return 'Q-Learning'
 
 def plot_score(game_scores, title, filename):
     plt.figure(figsize=(12, 8))
@@ -96,7 +105,7 @@ def plot_score_all_algos(best_by_algo, title, filename):
     # best_by_algo è un dict le cui entry sono (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores]
     # Gli scores sono di training o di testing a seconda dell'invocazione da parte di main_training
     plt.figure(figsize=(12, 8))
-    num_episodes = len(best_by_algo.values[0][1])
+    num_episodes = len(list(best_by_algo.values())[0])
     plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
 
     for key, best_scores in best_by_algo.items():
@@ -104,7 +113,7 @@ def plot_score_all_algos(best_by_algo, title, filename):
         algo, combination = key
 
         params = dict(combination)
-        label = algo + ', '
+        label = get_algo_str(algo) + ': '
         label += (
             f"γ={params['gamma']} "
             f"ε={params['epsilon']} "
@@ -120,7 +129,7 @@ def plot_score_all_algos(best_by_algo, title, filename):
     plt.xlabel("Episode")
     plt.ylabel("Total reward")
     plt.title(title)
-    plt.legend(title="Algo with hyperparameters", loc="best")
+    plt.legend(title="Algorithm with hyperparameters", loc="best")
     plt.savefig(filename)
     plt.show()
 
@@ -128,21 +137,21 @@ def plot_score_all_algos(best_by_algo, title, filename):
 def get_hyperparams(algo):
     if algo == 'mc':
         return [
-            {"gamma": 0.1, "epsilon": 0.2},
-            {"gamma": 0.5, "epsilon": 0.3},
-            {"gamma": 0.9, "epsilon": 0.1},
+            {"gamma": 0.2, "epsilon": 0.9},
+            {"gamma": 0.5, "epsilon": 0.7},
+            {"gamma": 0.8, "epsilon": 0.8},
         ]
     elif algo == 'sarsa' or algo =='ql':
         return [
-            {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7},
-            {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8},
-            {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9},
+            {"gamma": 0.2, "alpha": 0.2, "epsilon": 0.8},
+            {"gamma": 0.8, "alpha": 0.3, "epsilon": 0.7},
+            {"gamma": 0.5, "alpha": 0.4, "epsilon": 0.9},
         ]
     elif algo == 'sarsaL':
         return [
-        {"gamma": 0.1, "alpha": 0.1, "epsilon": 0.7, "lambda": 0.2},
-        {"gamma": 0.5, "alpha": 0.5, "epsilon": 0.8, "lambda": 0.5},
-        {"gamma": 0.9, "alpha": 0.9, "epsilon": 0.9, "lambda": 0.9},
+        {"gamma": 0.8, "alpha": 0.4, "epsilon": 0.7, "lambda": 0.3},
+        {"gamma": 0.5, "alpha": 0.2, "epsilon": 0.8, "lambda": 0.5},
+        {"gamma": 0.2, "alpha": 0.3, "epsilon": 0.9, "lambda": 0.9},
     ]
     else: return None
 
