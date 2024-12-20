@@ -115,11 +115,12 @@ def main(algo, gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     # Plot dei risultati del training
     plot_score(game_scores_dict, f"{algo} Training performance", f"pretrained_models/model_{algo}/plot_train.png")
 
-    best_combination = get_best_combination(game_scores_dict)
+    best_combination = dict(get_best_combination(game_scores_dict))
+    print(best_combination)
     agent_for_testing = create_agent_by_combination(algo, env, best_combination)
     game_scores = test(num_training_episodes, env, agent_for_testing)
-    game_scores_dict[tuple(combination.items())] = game_scores
-    plot_score_test(game_scores_dict, f"{algo} Testing performance", f"pretrained_models/model_{algo}/plot_test.png")
+    game_scores_dict = {tuple(best_combination.items()): game_scores}
+    plot_score(game_scores_dict, f"{algo} Testing performance", f"pretrained_models/model_{algo}/plot_test.png")
 
 
 
