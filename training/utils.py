@@ -73,14 +73,14 @@ def plot_score(game_scores, title, filename):
     for params_tuple, scores in game_scores.items():
         params = dict(params_tuple)
         label = (
-            f"γ={params['gamma']}, "
-            f"ε={params['epsilon']}"
+            f"γ={params['gamma']} "
+            f"ε={params['epsilon']} "
         )
         if 'alpha' in params:
-            label += f"α={params['alpha']}"
+            label += f"α={params['alpha']} "
         
         if 'lambda' in params:
-            label += f", λ={params['lambda']}"
+            label += f", λ={params['lambda']} "
 
         plt.plot(scores, label=label)
 
@@ -93,14 +93,36 @@ def plot_score(game_scores, title, filename):
 
 
 def plot_score_all_algos(best_by_algo, title, filename):
+    # best_by_algo è un dict le cui entry sono (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores]
+    # Gli scores sono di training o di testing a seconda dell'invocazione da parte di main_training
     plt.figure(figsize=(12, 8))
     num_episodes = len(best_by_algo.values[0][1])
     plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
 
-    for algo, best in best_by_algo.items():
-        pass
+    for key, best_scores in best_by_algo.items():
+        print(key)
+        algo, combination = key
 
+        params = dict(combination)
+        label = algo + ', '
+        label += (
+            f"γ={params['gamma']} "
+            f"ε={params['epsilon']} "
+        )
+        if 'alpha' in params:
+            label += f"α={params['alpha']} "
 
+        if 'lambda' in params:
+            label += f", λ={params['lambda']} "
+
+        plt.plot(best_scores, label=label)
+
+    plt.xlabel("Episode")
+    plt.ylabel("Total reward")
+    plt.title(title)
+    plt.legend(title="Algo with hyperparameters", loc="best")
+    plt.savefig(filename)
+    plt.show()
 
 
 def get_hyperparams(algo):

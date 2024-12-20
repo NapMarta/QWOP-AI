@@ -67,7 +67,7 @@ def worker(algo, gamma, alpha, eps, lam):
 
 
     # Plot dei risultati del training
-    plot_score(game_scores_dict, f"{algo} Training performance", f"pretrained_models/model_{algo}/plot_train.png")
+    plot_score(game_scores_dict, f"{algo} Training performance", f"results/model_{algo}/plot_train.png")
 
     best_combination, best_combination_scores_training = get_best_combination_with_scores(game_scores_dict)
     best_combination = dict(best_combination)
@@ -75,7 +75,7 @@ def worker(algo, gamma, alpha, eps, lam):
     agent_for_testing = create_agent_by_combination(algo, env, best_combination)
     game_scores_testing = test(num_testing_episodes, env, agent_for_testing)
     game_scores_testing_dict = {tuple(best_combination.items()): game_scores_testing}
-    plot_score(game_scores_testing_dict, f"{algo} Testing performance", f"pretrained_models/model_{algo}/plot_test.png")
+    plot_score(game_scores_testing_dict, f"{algo} Testing performance", f"results/model_{algo}/plot_test.png")
 
     # Utilizzare per effettuare fase di training/testing di un agente pretrained
     # if algo == 'mc':
@@ -102,7 +102,12 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
         tmp_res = worker(algo, gamma, alpha, eps, lam)
         best_by_algo[algo, tmp_res[0]] = [tmp_res[1], tmp_res[2]]
 
-    print(best_by_algo['sarsa'])
+    best_by_algo_training = {k: v[0] for k, v in best_by_algo.items()}
+    best_by_algo_testing = {k: v[1] for k, v in best_by_algo.items()}
+
+    plot_score_all_algos(best_by_algo_training, 'Training performance', f"results/all_models/plot_train.png")
+    plot_score_all_algos(best_by_algo_testing, 'Testing performance', f"results/all_models/plot_test.png")
+
 
 if __name__ == '__main__':
     main()
