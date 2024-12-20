@@ -44,13 +44,3 @@ def worker(num_episodes, env, agent, training):
     return game_scores
 
 
-
-
-
-
-
-
-if __name__ == "__main__":
-    main("sarsa")
-
-

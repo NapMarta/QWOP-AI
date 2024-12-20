@@ -92,14 +92,15 @@ def plot_score(game_scores, title, filename):
     plt.show()
 
 
-def plot_score_test(game_scores, title, filename):
-    plt.figure(figsize=(10, 10))
-    plt.plot(game_scores, label="Score per Episode")
-    plt.xlabel("Episode")
-    plt.ylabel("Score")
-    plt.title(title)
-    plt.savefig(filename)
-    plt.show()
+def plot_score_all_algos(best_by_algo, title, filename):
+    plt.figure(figsize=(12, 8))
+    num_episodes = len(best_by_algo.values[0][1])
+    plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
+
+    for algo, best in best_by_algo.items():
+        pass
+
+
 
 
 def get_hyperparams(algo):
