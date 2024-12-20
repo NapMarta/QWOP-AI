@@ -26,6 +26,8 @@ def create_agent_by_combination(algo, env, combination):
         agent = SARSALAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'], combination['lambda'])
     elif algo == 'ql':
         agent = QLAgent(env, combination['gamma'], combination['alpha'], combination['epsilon'])
+    elif algo == 'mc':
+        agent = MCAgent(env, combination['gamma'], combination['epsilon'])
     else:
         agent = None
 
