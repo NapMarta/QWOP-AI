@@ -2,10 +2,9 @@ from agents.SARSA_agent import SARSAAgent
 from agents.SARSAL_agent import SARSALAgent
 from agents.QL_agent import QLAgent
 from agents.MC_agent import MCAgent
-from training.SARSA_training import main as SARSA_main
 import MC_training
 import SARSA_training
-from .utils import *
+from utils import *
 
 
 def get_best_combination_with_scores(game_scores_dict):
@@ -53,7 +52,11 @@ def worker(algo, gamma, alpha, eps, lam):
 
         # Lista dei guadagni per ogni episodio
         game_scores = train(num_training_episodes, env, agent_for_training)
-        agent_for_training.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i_comb}.json")
+        
+        if algo == 'mc':
+            agent_for_training.save_model(f"pretrained_models/model_MC/q_values_comb-{i_comb}.json", f"pretrained_models/model_MC/policy_table_comb-{i_comb}.json")
+        else: 
+            agent_for_training.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i_comb}.json")
 
         # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
         # episodi di training
@@ -70,11 +73,16 @@ def worker(algo, gamma, alpha, eps, lam):
     best_combination = dict(best_combination)
     print(best_combination)
     agent_for_testing = create_agent_by_combination(algo, env, best_combination)
-    game_scores_testing = test(num_training_episodes, env, agent_for_testing)
+    game_scores_testing = test(num_testing_episodes, env, agent_for_testing)
     game_scores_testing_dict = {tuple(best_combination.items()): game_scores_testing}
     plot_score(game_scores_testing_dict, f"{algo} Testing performance", f"pretrained_models/model_{algo}/plot_test.png")
 
-    # agent.q_values = agent.load_model(f"pretrained_models/model_{algo}/q_values.json")
+    # Utilizzare per effettuare fase di training/testing di un agente pretrained
+    # if algo == 'mc':
+    #     agent_for_training.load_model("pretrained_models/model_MC/q_values.json", "pretrained_models/model_MC/policy_table.json")
+    # else:
+    #     agent_for_training.load_model(f"pretrained_models/model_{algo}/q_values.json")
+    
     env.close()
 
     # Restituisce la tripla (migliore combinazione, lista dei guadagni per la migliore combinazione in fase di training,
@@ -84,8 +92,7 @@ def worker(algo, gamma, alpha, eps, lam):
 
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
-    algos = ['mc']
-    # algos = ['sarsa', 'sarsaL', 'ql']
+    algos = ['mc', 'sarsa', 'sarsaL', 'ql']
 
     # Dizionario di coppie (k, v), con k = algoritmo, v = [best_combination, best_combination_scores_training, game_scores_testing]
     best_by_algo = dict()

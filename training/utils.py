@@ -74,9 +74,11 @@ def plot_score(game_scores, title, filename):
         params = dict(params_tuple)
         label = (
             f"γ={params['gamma']}, "
-            f"α={params['alpha']}, "
             f"ε={params['epsilon']}"
         )
+        if 'alpha' in params:
+            label += f"α={params['alpha']}"
+        
         if 'lambda' in params:
             label += f", λ={params['lambda']}"
 

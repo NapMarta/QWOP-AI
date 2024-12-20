@@ -10,7 +10,7 @@ import gymnasium as gym
 from collections import defaultdict
 from utils import *
 
-def train(env, agent, num_episodes):
+def train(num_episodes, env, agent):
     
     # Inizializzazione della policy
     # policy = make_epsilon_greedy_policy(agent)
@@ -67,7 +67,7 @@ def train(env, agent, num_episodes):
 
 
 
-def test(env, agent, num_episodes):
+def test(num_episodes, env, agent):
     game_scores = []
     with tqdm(total=num_episodes, desc="Testing Episodes") as progress_bar:
         for i in range(num_episodes):
@@ -96,65 +96,4 @@ def test(env, agent, num_episodes):
     
     return game_scores
 
-def train_and_plot(param_combinations, env, num_episodes, plot_filename):
-    
-    game_scores_dict = {}
-    agents_dict = {}
-
-    for params in param_combinations:
-        agent = MCAgent(env, params['gamma'], params['epsilon'])
-        
-        game_scores = train(num_episodes, env, agent)
-        game_scores_dict[tuple(params.items())] = game_scores
-        agents_dict[tuple(params.items())] = agent
-
-    plot_score(game_scores_dict, f"MonteCarlo Training Performance", plot_filename)
-
-    # Find the best parameter configuration
-    best_params = max(
-        game_scores_dict.items(),
-        key=lambda item: sum(item[1]) / len(item[1])  # Compute average score
-    )[0]
-
-    # Convert the tuple of parameters back to a dictionary
-    best_params_dict = dict(best_params)
-
-    # Return the agent with the best parameters
-    best_agent = agents_dict[best_params]
-
-    return best_agent, best_params_dict
-
-
-
-if __name__ == "__main__":
-    env = get_init_env()
-
-    param_combinations_mc = [
-        {"gamma": 0.1, "epsilon": 0.2},
-        {"gamma": 0.5, "epsilon": 0.3},
-        {"gamma": 0.9, "epsilon": 0.1},
-    ]
-    
-    # Create a new agent
-    # agentMC = MCAgent(env = env)    
-    print("Training: ")
-
-    episodes = 5
-    
-    agentMC, params = train_and_plot(param_combinations_mc, env, episodes, "pretrained_models/model_MC/plot_train.png")
-
-    # game_scores_train = train(env, agentMC, 1)
-    # utils.plot_score(game_scores_train, "Training", "pretrained_models/model_MC/plot_train.png")
-
-    agentMC.save_model("pretrained_models/model_MC/q_values.json", "pretrained_models/model_MC/policy_table.json")
-
-    agentMC.load_model("pretrained_models/model_MC/q_values.json", "pretrained_models/model_MC/policy_table.json")
-    
-    print("Testing:")
-    game_scores_test = test(env, agentMC, 2)
-
-    plot_score_test(game_scores_test, "Testing", "pretrained_models/model_MC/plot_test.png")
-    # utils.plot_value_function(agentMC, "pretrained_models/model_MC/plot_valuefunction.png")
-
-    env.close()
 
