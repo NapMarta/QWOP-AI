@@ -1,3 +1,8 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+
 from agents.SARSA_agent import SARSAAgent
 from agents.SARSAL_agent import SARSALAgent
 from agents.QL_agent import QLAgent
@@ -42,7 +47,7 @@ def worker(algo, gamma, alpha, eps, lam):
         test = SARSA_training.test
 
     env = get_init_env()
-    num_training_episodes, num_testing_episodes = 2, 1
+    num_training_episodes, num_testing_episodes = 100, 1
 
     game_scores_dict, agents_dict = {}, {}
     hyperparams = get_hyperparams(algo)
@@ -99,6 +104,7 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     best_by_algo = dict()
 
     for algo in algos:
+        print(f"Execute {algo}")
         tmp_res = worker(algo, gamma, alpha, eps, lam)
         best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
