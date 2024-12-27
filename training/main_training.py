@@ -38,7 +38,7 @@ def create_agent_by_combination(algo, env, combination):
     return agent
 
 
-def worker(algo, gamma, alpha, eps, lam):
+def worker(algo, gamma, alpha, eps, lam, end_step):
     if algo == 'mc':
         train = MC_training.train
         test = MC_training.test
@@ -47,7 +47,7 @@ def worker(algo, gamma, alpha, eps, lam):
         test = SARSA_training.test
 
     env = get_init_env()
-    num_training_episodes, num_testing_episodes = 100, 1
+    num_training_episodes, num_testing_episodes = 100, 10
 
     game_scores_dict, agents_dict = {}, {}
     hyperparams = get_hyperparams(algo)
@@ -56,7 +56,7 @@ def worker(algo, gamma, alpha, eps, lam):
         agent_for_training = create_agent_by_combination(algo, env, combination)
 
         # Lista dei guadagni per ogni episodio
-        game_scores = train(num_training_episodes, env, agent_for_training)
+        game_scores = train(num_training_episodes, env, agent_for_training, end_step)
         
         if algo == 'mc':
             agent_for_training.save_model(f"pretrained_models/model_MC/q_values_comb-{i_comb}.json", f"pretrained_models/model_MC/policy_table_comb-{i_comb}.json")
@@ -72,7 +72,7 @@ def worker(algo, gamma, alpha, eps, lam):
 
 
     # Plot dei risultati del training
-    plot_score(game_scores_dict, f"{get_algo_str(algo)} Training Performance", f"results/model_{algo}/plot_train.png")
+    plot_score(game_scores_dict, f"{get_algo_str(algo)} Training Performance with {end_step} step", f"results/model_{algo}/plot_train.png")
 
     best_combination, best_combination_scores_training = get_best_combination_with_scores(game_scores_dict)
     best_combination = dict(best_combination)
@@ -97,21 +97,22 @@ def worker(algo, gamma, alpha, eps, lam):
 
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
-    #algos = ['mc', 'sarsa']
+    # algos = ['mc', 'sarsa']
     algos = ['mc', 'sarsa', 'sarsaL', 'ql']
+    end_step = 4000
 
     # Dizionario di coppie (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores_training, game_scores_testing]
     best_by_algo = dict()
 
     for algo in algos:
         print(f"Execute {algo}")
-        tmp_res = worker(algo, gamma, alpha, eps, lam)
+        tmp_res = worker(algo, gamma, alpha, eps, lam, end_step)
         best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
     best_by_algo_training = {k: v[0] for k, v in best_by_algo.items()}
     best_by_algo_testing = {k: v[1] for k, v in best_by_algo.items()}
 
-    plot_score_all_algos(best_by_algo_training, 'Training Performance', f"results/all_models/plot_train.png")
+    plot_score_all_algos(best_by_algo_training, f'Training Performance with {end_step} step', f"results/all_models/plot_train.png")
     plot_score_all_algos(best_by_algo_testing, 'Testing Performance', f"results/all_models/plot_test.png")
 
 
