@@ -98,7 +98,7 @@ def plot_score(game_scores, title, filename):
     plt.title(title)
     plt.legend(title="Hyperparameters", loc="best")
     plt.savefig(filename)
-    plt.show()
+    # plt.show()
 
 
 def plot_score_all_algos(best_by_algo, title, filename):
@@ -131,7 +131,7 @@ def plot_score_all_algos(best_by_algo, title, filename):
     plt.title(title)
     plt.legend(title="Algorithm with hyperparameters", loc="best")
     plt.savefig(filename)
-    plt.show()
+    # plt.show()
 
 
 def get_hyperparams(algo):
