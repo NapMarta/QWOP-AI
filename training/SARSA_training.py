@@ -11,7 +11,7 @@ def test(num_episodes, env, agent):
 
 def worker(num_episodes, env, agent, end_step, training):
     game_scores = []
-    desc = "Training episodes:" if training else "Testing episode:"
+    desc = "Training episodes" if training else "Testing episode"
     with tqdm(total=num_episodes, desc=desc) as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0

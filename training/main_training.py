@@ -47,7 +47,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
         test = SARSA_training.test
 
     env = get_init_env()
-    num_training_episodes, num_testing_episodes = 100, 10
+    num_training_episodes, num_testing_episodes = 100, 10   # 1000, 100
 
     game_scores_dict, agents_dict = {}, {}
     hyperparams = get_hyperparams(algo)
@@ -76,7 +76,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
 
     best_combination, best_combination_scores_training = get_best_combination_with_scores(game_scores_dict)
     best_combination = dict(best_combination)
-    print(best_combination)
+    print(f"Best combination for {algo} is {best_combination}")
     agent_for_testing = create_agent_by_combination(algo, env, best_combination)
     game_scores_testing = test(num_testing_episodes, env, agent_for_testing)
     game_scores_testing_dict = {tuple(best_combination.items()): game_scores_testing}
@@ -99,13 +99,13 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
 def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     # algos = ['mc', 'sarsa']
     algos = ['mc', 'sarsa', 'sarsaL', 'ql']
-    end_step = 4000
+    end_step = 4000     # 4000, 6000, 8000
 
     # Dizionario di coppie (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores_training, game_scores_testing]
     best_by_algo = dict()
 
     for algo in algos:
-        print(f"#### Execute {algo} ####")
+        print(f"\n\n#### Execute {algo} ####")
         tmp_res = worker(algo, gamma, alpha, eps, lam, end_step)
         best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
