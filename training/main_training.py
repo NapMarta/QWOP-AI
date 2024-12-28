@@ -59,7 +59,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
         game_scores = train(num_training_episodes, env, agent_for_training, end_step)
         
         if algo == 'mc':
-            agent_for_training.save_model(f"pretrained_models/model_MC/q_values_comb-{i_comb}.json", f"pretrained_models/model_MC/policy_table_comb-{i_comb}.json")
+            agent_for_training.save_model(f"pretrained_models/model_mc/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/policy_table_comb-{i_comb}.json")
         else: 
             agent_for_training.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i_comb}.json")
 
@@ -105,7 +105,7 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     best_by_algo = dict()
 
     for algo in algos:
-        print(f"Execute {algo}")
+        print(f"#### Execute {algo} ####")
         tmp_res = worker(algo, gamma, alpha, eps, lam, end_step)
         best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
