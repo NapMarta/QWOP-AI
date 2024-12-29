@@ -59,9 +59,9 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
         game_scores = train(num_training_episodes, env, agent_for_training, end_step)
         
         if algo == 'mc':
-            agent_for_training.save_model(f"pretrained_models/model_mc/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/policy_table_comb-{i_comb}.json")
+            agent_for_training.save_model(f"pretrained_models/model_mc/{end_step}step/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/{end_step}step/policy_table_comb-{i_comb}.json")
         else: 
-            agent_for_training.save_model(f"pretrained_models/model_{algo}/q_values_comb-{i_comb}.json")
+            agent_for_training.save_model(f"pretrained_models/model_{algo}/{end_step}step/q_values_comb-{i_comb}.json")
 
         # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
         # episodi di training
@@ -72,7 +72,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
 
 
     # Plot dei risultati del training
-    plot_score(game_scores_dict, f"{get_algo_str(algo)} Training Performance with {end_step} step", f"results/model_{algo}/plot_train.png")
+    plot_score(game_scores_dict, f"{get_algo_str(algo)} Training Performance with {end_step} step", f"results/model_{algo}/{end_step}step/plot_train.png")
 
     best_combination, best_combination_scores_training = get_best_combination_with_scores(game_scores_dict)
     best_combination = dict(best_combination)
@@ -80,7 +80,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
     agent_for_testing = create_agent_by_combination(algo, env, best_combination)
     game_scores_testing = test(num_testing_episodes, env, agent_for_testing)
     game_scores_testing_dict = {tuple(best_combination.items()): game_scores_testing}
-    plot_score(game_scores_testing_dict, f"{get_algo_str(algo)} Testing Performance", f"results/model_{algo}/plot_test.png")
+    plot_score(game_scores_testing_dict, f"{get_algo_str(algo)} Testing Performance", f"results/model_{algo}/{end_step}step/plot_test.png")
 
     # Utilizzare per effettuare fase di training/testing di un agente pretrained
     # if algo == 'mc':
@@ -112,8 +112,8 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     best_by_algo_training = {k: v[0] for k, v in best_by_algo.items()}
     best_by_algo_testing = {k: v[1] for k, v in best_by_algo.items()}
 
-    plot_score_all_algos(best_by_algo_training, f'Training Performance with {end_step} step', f"results/all_models/plot_train.png")
-    plot_score_all_algos(best_by_algo_testing, 'Testing Performance', f"results/all_models/plot_test.png")
+    plot_score_all_algos(best_by_algo_training, f'Training Performance with {end_step} step', f"results/all_models/{end_step}step/plot_train.png")
+    plot_score_all_algos(best_by_algo_testing, 'Testing Performance', f"results/all_models/{end_step}step/plot_test.png")
 
 
 if __name__ == '__main__':
