@@ -76,7 +76,6 @@ def get_algo_str(algo):
 
 
 def plot_score(game_scores, title, filename):
-    
     plt.figure(figsize=(12, 8))
 
     for params_tuple, scores in game_scores.items():
@@ -117,7 +116,6 @@ def plot_score_all_algos(best_by_algo, title, filename):
     # Gli scores sono di training o di testing a seconda dell'invocazione da parte di main_training
     plt.figure(figsize=(12, 8))
     num_episodes = len(list(best_by_algo.values())[0])
-    plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
 
     for key, best_scores in best_by_algo.items():
         print(key)
@@ -135,7 +133,14 @@ def plot_score_all_algos(best_by_algo, title, filename):
         if 'lambda' in params:
             label += f", λ={params['lambda']} "
 
-        plt.plot(best_scores, label=label)
+        # Calcolo del passo per il sottocampionamento
+        step = max(1, num_episodes // 10)  # Calcolo del passo per sottocampionamento
+        x_values = range(1, num_episodes + 1, step)
+        y_values = [best_scores[i - 1] for i in x_values]
+
+        plt.plot(x_values, y_values, label=label)
+
+    plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
 
     plt.xlabel("Episode")
     plt.ylabel("Total reward")
