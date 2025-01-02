@@ -18,8 +18,8 @@ def get_best_combination_with_scores(game_scores_dict):
     for combination, scores in game_scores_dict.items():
         last_scores_mean[combination] = statistics.mean(scores[-10:])
 
-    # Restituisce la combinazione che ha consentito di ottenere il massimo last score, e tutti gli score associati
-    # a quella combinazione
+    # Restituisce la combinazione che ha consentito di ottenere la massima media (calcolata sugli ultimi 10 score
+    # di ogni combinazione), e tutti gli score associati a quella combinazione
     best_combination = max(last_scores_mean, key=last_scores_mean.get)
     return best_combination, game_scores_dict[best_combination]
 
