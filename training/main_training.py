@@ -1,5 +1,6 @@
 import sys
 import os
+import statistics
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 
@@ -13,13 +14,13 @@ from utils import *
 
 
 def get_best_combination_with_scores(game_scores_dict):
-    last_scores = dict()
+    last_scores_mean = dict()
     for combination, scores in game_scores_dict.items():
-        last_scores[combination] = scores[len(scores) - 1]
+        last_scores_mean[combination] = statistics.mean(scores[-10:])
 
     # Restituisce la combinazione che ha consentito di ottenere il massimo last score, e tutti gli score associati
     # a quella combinazione
-    best_combination = max(last_scores, key=last_scores.get)
+    best_combination = max(last_scores_mean, key=last_scores_mean.get)
     return best_combination, game_scores_dict[best_combination]
 
 
