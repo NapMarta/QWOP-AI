@@ -1,6 +1,7 @@
 
 import json
 import numpy as np
+import os
 
 class Agent:
     def __init__(self, env, gamma, eps):
@@ -54,6 +55,9 @@ class Agent:
 
 
     def save_model(self, filename):
+        # Crea la directory se non esiste
+        os.makedirs(os.path.dirname(filename), exist_ok=True)
+
         q_table_str_keys = {str(key): value for key, value in self.q_values.items()}
 
         with open(filename, "w") as file:

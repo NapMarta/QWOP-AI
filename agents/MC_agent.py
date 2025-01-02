@@ -5,6 +5,7 @@ from agents.agent import Agent
 import qwop_gym
 import gymnasium as gym
 from collections import defaultdict
+import os
 
 class MCAgent(Agent):
     def __init__(self, env, gamma=1.0, eps=0.1):
@@ -47,13 +48,16 @@ class MCAgent(Agent):
     def save_model(self, filename_qvalues, filename_policy):
         q_table_str_keys = {str(key): value for key, value in self.q_values.items()}
 
+        # Crea la directory se non esiste
+        os.makedirs(os.path.dirname(filename_qvalues), exist_ok=True)
         with open(filename_qvalues, "w") as file:
             json.dump(q_table_str_keys, file)
 
 
         policy_keys = {str(key): value.tolist() for key, value in self.policy_table.items()}
-        
 
+        # Crea la directory se non esiste
+        os.makedirs(os.path.dirname(filename_policy), exist_ok=True)
         with open(filename_policy, "w") as file:
             # print(policy_keys)
             json.dump(policy_keys, file)
