@@ -74,12 +74,21 @@ def get_algo_str(algo):
     elif algo == 'ql':
         return 'Q-Learning'
 
+
 def plot_score(game_scores, title, filename):
+    
     plt.figure(figsize=(12, 8))
-    num_episodes = len(game_scores)
-    plt.xticks(range(1, num_episodes + 1, max(1, num_episodes // 10)))
 
     for params_tuple, scores in game_scores.items():
+        # Numero di episodi
+        num_episodes = len(scores)
+        step = max(1, num_episodes // 10)  # Calcolo del passo per sottocampionamento
+
+        # Sottocampionamento: Seleziona 10 punti distribuiti uniformemente
+        x_values = range(1, num_episodes + 1, step)
+        y_values = [scores[i - 1] for i in x_values]
+        
+        # Label per i parametri
         params = dict(params_tuple)
         label = (
             f"γ={params['gamma']} "
@@ -87,18 +96,20 @@ def plot_score(game_scores, title, filename):
         )
         if 'alpha' in params:
             label += f"α={params['alpha']} "
-        
         if 'lambda' in params:
             label += f", λ={params['lambda']} "
 
-        plt.plot(scores, label=label)
+        # Traccia i dati sottocampionati
+        plt.plot(x_values, y_values, label=label)
+
+    # Configura i tick sull'asse x per mostrare solo 10 valori
+    plt.xticks(x_values)
 
     plt.xlabel("Episode")
     plt.ylabel("Total reward")
     plt.title(title)
     plt.legend(title="Hyperparameters", loc="best")
     plt.savefig(filename)
-    # plt.show()
 
 
 def plot_score_all_algos(best_by_algo, title, filename):
