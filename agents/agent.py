@@ -14,7 +14,7 @@ class Agent:
 
     # Funzione di ricompensa personalizzata
     def reward_function(self, reward_env, info):
-        reward = reward_env + info['distance']/100
+        reward = reward_env + (info['distance'] // 10) + (info['avgspeed'] // 10)
         return reward
 
     # state_action è la tupla (S, A)
