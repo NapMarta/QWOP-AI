@@ -55,32 +55,32 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
     hyperparams = get_hyperparams(algo)
     threads_comb = []
 
-    for i_comb, combination in enumerate(hyperparams, start=1):
-        thread_comb = ThreadCombination(algo, combination, train, num_training_episodes, env, end_step, i_comb, game_scores_dict, agents_dict)
-        thread_comb.start()
-        threads_comb.append(thread_comb)
-
-    # Il metodo join() attende il completamento di tutti i thread
-    for thread_comb in threads_comb:
-        thread_comb.join()
-
     # for i_comb, combination in enumerate(hyperparams, start=1):
-    #     agent_for_training = create_agent_by_combination(algo, env, combination)
+    #     thread_comb = ThreadCombination(algo, combination, train, num_training_episodes, env, end_step, i_comb, game_scores_dict, agents_dict)
+    #     thread_comb.start()
+    #     threads_comb.append(thread_comb)
 
-    #     # Lista dei guadagni per ogni episodio
-    #     game_scores = train(num_training_episodes, env, agent_for_training, end_step)
+    # # Il metodo join() attende il completamento di tutti i thread
+    # for thread_comb in threads_comb:
+    #     thread_comb.join()
+
+    for i_comb, combination in enumerate(hyperparams, start=1):
+        agent_for_training = create_agent_by_combination(algo, env, combination)
+
+        # Lista dei guadagni per ogni episodio
+        game_scores = train(num_training_episodes, env, agent_for_training, end_step, algo)
         
-    #     if algo == 'mc':
-    #         agent_for_training.save_model(f"pretrained_models/model_mc/{end_step}step/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/{end_step}step/policy_table_comb-{i_comb}.json")
-    #     else: 
-    #         agent_for_training.save_model(f"pretrained_models/model_{algo}/{end_step}step/q_values_comb-{i_comb}.json")
+        if algo == 'mc':
+            agent_for_training.save_model(f"pretrained_models/model_mc/{end_step}step/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/{end_step}step/policy_table_comb-{i_comb}.json")
+        else: 
+            agent_for_training.save_model(f"pretrained_models/model_{algo}/{end_step}step/q_values_comb-{i_comb}.json")
 
-    #     # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
-    #     # episodi di training
-    #     game_scores_dict[tuple(combination.items())] = game_scores
+        # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
+        # episodi di training
+        game_scores_dict[tuple(combination.items())] = game_scores
 
-    #     # Dizionario degli agenti creati per ogni combinazione di parametri
-    #     agents_dict[tuple(combination.items())] = agent_for_training
+        # Dizionario degli agenti creati per ogni combinazione di parametri
+        agents_dict[tuple(combination.items())] = agent_for_training
 
 
     # Plot dei risultati del training
