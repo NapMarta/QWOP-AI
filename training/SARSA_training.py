@@ -1,17 +1,17 @@
 from tqdm import tqdm
 
 
-def train(num_episodes, env, agent, end_step):
-    return worker(num_episodes, env, agent, end_step, training=True)
+def train(num_episodes, env, agent, end_step, algo):
+    return worker(num_episodes, env, agent, algo, end_step, training=True)
 
 
-def test(num_episodes, env, agent):
-    return worker(num_episodes, env, agent, end_step = 0, training=False)
+def test(num_episodes, env, agent, algo):
+    return worker(num_episodes, env, agent, algo, end_step = 0, training=False)
 
 
-def worker(num_episodes, env, agent, end_step, training):
+def worker(num_episodes, env, agent, algo, end_step, training):
     game_scores = []
-    desc = "Training episodes" if training else "Testing episode"
+    desc = "Training Episodes " + algo if training else "Testing Episodes " + algo
     with tqdm(total=num_episodes, desc=desc) as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
