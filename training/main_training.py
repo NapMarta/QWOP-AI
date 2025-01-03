@@ -117,29 +117,29 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     # Dizionario di coppie (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores_training, game_scores_testing]
     best_by_algo = dict()
 
-    # Dizionario per salvare i risultati condivisi
-    results = {}
-    threads_algo = []
+    # # Dizionario per salvare i risultati condivisi
+    # results = {}
+    # threads_algo = []
 
-    # Creazione e avvio dei thread
-    for algo in algos:
-        thread_algo = ThreadAlgo(algo, gamma, alpha, eps, lam, end_step, results)
-        thread_algo.start()
-        threads_algo.append(thread_algo)
-
-    # Il metodo join() attende il completamento di tutti i thread
-    for thread_algo in threads_algo:
-        thread_algo.join()
-
-    for algo in results:
-        best_by_algo = {
-            (algo, tuple(results[algo][0].items())): [results[algo][1], results[algo][2]]  
-        }
-
+    # # Creazione e avvio dei thread
     # for algo in algos:
-    #     print(f"\n\n#### Execute {algo} ####")
-    #     tmp_res = worker(algo, gamma, alpha, eps, lam, end_step)
-    #     best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
+    #     thread_algo = ThreadAlgo(algo, gamma, alpha, eps, lam, end_step, results)
+    #     thread_algo.start()
+    #     threads_algo.append(thread_algo)
+
+    # # Il metodo join() attende il completamento di tutti i thread
+    # for thread_algo in threads_algo:
+    #     thread_algo.join()
+
+    # for algo in results:
+    #     best_by_algo = {
+    #         (algo, tuple(results[algo][0].items())): [results[algo][1], results[algo][2]]  
+    #     }
+
+    for algo in algos:
+        print(f"\n\n#### Execute {algo} ####")
+        tmp_res = worker(algo, gamma, alpha, eps, lam, end_step)
+        best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
     best_by_algo_training = {k: v[0] for k, v in best_by_algo.items()}
     best_by_algo_testing = {k: v[1] for k, v in best_by_algo.items()}
