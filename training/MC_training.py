@@ -10,7 +10,7 @@ import gymnasium as gym
 from collections import defaultdict
 from utils import *
 
-def train(num_episodes, env, agent, end_step):
+def train(num_episodes, env, agent, end_step, algo):
     
     # Inizializzazione della policy
     # policy = make_epsilon_greedy_policy(agent)
@@ -20,7 +20,7 @@ def train(num_episodes, env, agent, end_step):
     episode_reward = 0
     game_scores = []
     
-    with tqdm(total=num_episodes, desc="Training Episodes") as progress_bar:
+    with tqdm(total=num_episodes, desc="Training Episodes " + algo) as progress_bar:
         for _ in range(num_episodes):
             episodes = []
             # Genera gli episodi fino a raggiungere uno stato finale 
@@ -67,9 +67,9 @@ def train(num_episodes, env, agent, end_step):
 
 
 
-def test(num_episodes, env, agent):
+def test(num_episodes, env, agent, algo):
     game_scores = []
-    with tqdm(total=num_episodes, desc="Testing Episodes") as progress_bar:
+    with tqdm(total=num_episodes, desc="Testing Episodes " + algo) as progress_bar:
         for i in range(num_episodes):
             episode_reward = 0
             curr_state = agent.export_state(agent.env.reset()[0])
