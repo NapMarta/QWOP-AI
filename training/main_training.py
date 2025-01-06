@@ -69,7 +69,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
         agent_for_training = create_agent_by_combination(algo, env, combination)
 
         # Lista dei guadagni per ogni episodio
-        game_scores = train(num_training_episodes, env, agent_for_training, end_step, algo)
+        game_scores, avgspeedTrain = train(num_training_episodes, env, agent_for_training, end_step, algo)
         
         if algo == 'mc':
             agent_for_training.save_model(f"pretrained_models/model_mc/{end_step}step/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/{end_step}step/policy_table_comb-{i_comb}.json")
@@ -91,7 +91,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
     best_combination = dict(best_combination)
     print(f"Best combination for {algo} is {best_combination}")
     agent_for_testing = create_agent_by_combination(algo, env, best_combination)
-    game_scores_testing = test(num_testing_episodes, env, agent_for_testing, algo)
+    game_scores_testing, avgspeedTest = test(num_testing_episodes, env, agent_for_testing, algo)
     game_scores_testing_dict = {tuple(best_combination.items()): game_scores_testing}
     plot_score(game_scores_testing_dict, f"{get_algo_str(algo)} Testing Performance", f"results/model_{algo}/{end_step}step/plot_test.png")
 
