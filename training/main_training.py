@@ -50,7 +50,7 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
         test = SARSA_training.test
 
     env = get_init_env()
-    num_training_episodes, num_testing_episodes = 2, 2   # 1000, 100
+    num_training_episodes, num_testing_episodes = 100, 5   # 1000, 100
 
     game_scores_dict, agents_dict = {}, {}
     hyperparams = get_hyperparams(algo)
@@ -111,8 +111,8 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
     # algos = ['mc', 'sarsa']
-    algos = ['mc', 'sarsa', 'sarsaL', 'ql']
-    end_step = 4000     # 4000, 6000, 8000
+    algos = ['mc']
+    end_step = 3000     # 4000, 6000, 8000
 
     # Dizionario di coppie (k, v), con k = (algoritmo, best_combination), v = [best_combination_scores_training, game_scores_testing]
     best_by_algo = dict()
