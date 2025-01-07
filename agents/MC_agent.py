@@ -52,7 +52,7 @@ class MCAgent(Agent):
             json.dump(q_table_str_keys, file)
 
 
-        policy_keys = {str(key): value.tolist() for key, value in self.policy_table.items()}
+        policy_keys = {str(key): np.array(value).tolist() for key, value in self.policy_table.items()}
 
         # Crea la directory se non esiste
         os.makedirs(os.path.dirname(filename_policy), exist_ok=True)

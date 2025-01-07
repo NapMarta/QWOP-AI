@@ -108,9 +108,94 @@ def worker(algo, gamma, alpha, eps, lam, end_step):
     return best_combination, best_combination_scores_training, game_scores_testing
 
 
+def worker_finetuning(algo, gamma, alpha, eps, lam, end_step):
+    if algo == 'mc':
+        train = MC_training.train
+        test = MC_training.test
+    else:
+        train = SARSA_training.train
+        test = SARSA_training.test
+
+    
+    num_training_episodes, num_testing_episodes = 100, 10  
+    
+    eps_finetuning = 10
+    num_finetuning = num_training_episodes // eps_finetuning
+
+    game_scores_dict, agents_dict = {}, {}
+    game_scores_vect, agent_for_training_vect = [], []
+
+    hyperparams = get_hyperparams(algo)
+
+    
+
+    for i_comb, combination in enumerate(hyperparams, start=1):
+
+        for i_finetuning in range(num_finetuning):
+            print(f"\nCombination for {algo} - {combination} - # finetuning {i_finetuning + 1}")
+            env = get_init_env()
+            agent_for_training = create_agent_by_combination(algo, env, combination)
+
+            if algo == 'mc' and i_finetuning > 0:
+                agent_for_training.load_model(f"pretrained_models/model_mc/{end_step}step_finetuning/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/{end_step}step_finetuning/policy_table_comb-{i_comb}.json")
+            elif i_finetuning > 0: 
+                agent_for_training.load_model(f"pretrained_models/model_{algo}/{end_step}step_finetuning/q_values_comb-{i_comb}.json")
+
+
+            # Lista dei guadagni per ogni episodio
+            game_scores, avgspeedTrain = train(eps_finetuning, env, agent_for_training, end_step, algo)
+            
+            if algo == 'mc':
+                agent_for_training.save_model(f"pretrained_models/model_mc/{end_step}step_finetuning/q_values_comb-{i_comb}.json", f"pretrained_models/model_mc/{end_step}step_finetuning/policy_table_comb-{i_comb}.json")
+            else: 
+                agent_for_training.save_model(f"pretrained_models/model_{algo}/{end_step}step_finetuning/q_values_comb-{i_comb}.json")
+
+            game_scores_vect.extend(game_scores)
+            agent_for_training_vect.append(agent_for_training)
+            
+            env.close()
+        
+        # Dizionario le cui entry sono (k, v), con k = lista dei valori degli iperparametri, v = lista di score nei vari
+        # episodi di training
+        game_scores_dict[tuple(combination.items())] = game_scores_vect
+        game_scores_vect = [] 
+
+
+        # Dizionario degli agenti creati per ogni combinazione di parametri
+        agents_dict[tuple(combination.items())] = agent_for_training_vect
+        agent_for_training_vect = []
+
+
+    # Plot dei risultati del training
+    plot_score(game_scores_dict, f"{get_algo_str(algo)} Training Performance with {end_step} step and finetuning", f"results/model_{algo}/{end_step}step_finetuning/plot_train.png")
+
+    best_combination, best_combination_scores_training = get_best_combination_with_scores(game_scores_dict)
+    best_combination = dict(best_combination)
+    print(f"\nBest combination for {algo} is {best_combination}")
+    
+    env = get_init_env()
+    agent_for_testing = create_agent_by_combination(algo, env, best_combination)
+    game_scores_testing, avgspeedTest = test(num_testing_episodes, env, agent_for_testing, algo)
+    game_scores_testing_dict = {tuple(best_combination.items()): game_scores_testing}
+    plot_score(game_scores_testing_dict, f"{get_algo_str(algo)} Testing Performance with finetuning", f"results/model_{algo}/{end_step}step_finetuning/plot_test.png")
+
+    # Utilizzare per effettuare fase di training/testing di un agente pretrained
+    # if algo == 'mc':
+    #     agent_for_training.load_model("pretrained_models/model_MC/q_values.json", "pretrained_models/model_MC/policy_table.json")
+    # else:
+    #     agent_for_training.load_model(f"pretrained_models/model_{algo}/q_values.json")
+    
+    env.close()
+
+    # Restituisce la tripla (migliore combinazione, lista dei guadagni per la migliore combinazione in fase di training,
+    # lista dei guadagni per la migliore combinazione in fase di testing)
+    return best_combination, best_combination_scores_training, game_scores_testing
+
+
+
 # lam è utilizzato solo se algo == 'sarsaL'
 def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
-    # algos = ['mc', 'sarsa']
+    # algos = ['mc', 'sarsa', 'sarsaL', 'ql']
     algos = ['mc']
     end_step = 3000     # 4000, 6000, 8000
 
@@ -138,14 +223,14 @@ def main(gamma=0.1, alpha=0.1, eps=0.2, lam=0.2):
 
     for algo in algos:
         print(f"\n\n#### Execute {algo} ####")
-        tmp_res = worker(algo, gamma, alpha, eps, lam, end_step)
+        tmp_res = worker_finetuning(algo, gamma, alpha, eps, lam, end_step)
         best_by_algo[(algo, tuple(tmp_res[0].items()))] = [tmp_res[1], tmp_res[2]]
 
     best_by_algo_training = {k: v[0] for k, v in best_by_algo.items()}
     best_by_algo_testing = {k: v[1] for k, v in best_by_algo.items()}
 
-    plot_score_all_algos(best_by_algo_training, f'Training Performance with {end_step} step', f"results/all_models/{end_step}step/plot_train.png")
-    plot_score_all_algos(best_by_algo_testing, 'Testing Performance', f"results/all_models/{end_step}step/plot_test.png")
+    # plot_score_all_algos(best_by_algo_training, f'Training Performance with {end_step} step', f"results/all_models/{end_step}step/plot_train.png")
+    # plot_score_all_algos(best_by_algo_testing, 'Testing Performance', f"results/all_models/{end_step}step/plot_test.png")
 
 
 if __name__ == '__main__':
