@@ -112,9 +112,9 @@ if __name__ == "__main__":
     env = get_init_env()
     combination = get_hyperparams("mc")[0]
     agent = MCAgent(env, combination['gamma'], combination['epsilon'])
-    agent.load_model("pretrained_models/model_mc/3000step/q_values_comb-1.json", "pretrained_models/model_mc/3000step/policy_table_comb-1.json" )
+    agent.load_model("pretrained_models/model_mc/3000step/q_values_comb-3.json", "pretrained_models/model_mc/3000step/policy_table_comb-3.json" )
 
-    game_scores, avgspeed = test(10, env, agent, "mc")
+    game_scores, avgspeed = test(5, env, agent, "mc")
 
     print(f"game scores: {game_scores} \navg speed: {avgspeed}")
     env.close()

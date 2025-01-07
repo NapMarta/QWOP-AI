@@ -17,16 +17,14 @@ class MCAgent(Agent):
 
 
     def get_action(self, curr_state, exploration = False):
-        if exploration and np.random.rand() < self.eps:
-            # Fai esplorazione
-            action = self.env.action_space.sample()
-            # Decrementa leggermente la prob. di esplorazione
-            self.eps *= 0.99
-        else:
-            probs = self.policy_table[curr_state]
-            probs /= np.sum(probs)  # Normalizza prima di usarle
-            action = np.random.choice(np.arange(len(probs)), p=probs)
+        probs = self.policy_table[curr_state]
+        probs /= np.sum(probs)  # Normalizzazione
 
+        if exploration:
+            action = np.random.choice(np.arange(len(probs)), p=probs)
+        else:
+            action = np.argmax(probs)
+            
         return action
 
 
