@@ -42,8 +42,17 @@ Ulteriori dettagli e relative motivazioni sono reperibili nella documentazione d
 
 
 
-# Requisiti
+## Requisiti
 L'esecuzione del progetto richiede l'installazione delle dipendenze, da eseguirsi tramite il comando
 ```
     pip install
 ```
+
+
+## Autori e contatti
+| Autore              | Indirizzo email                |
+|---------------------|--------------------------------|
+| Simona Lo Conte     | s.loconte2@studenti.unisa.it   |
+| Marta Napolillo     | m.napolillo1@studenti.unisa.it |
+| Francesco Giorgione | f.giorgione4@studenti.unisa.it |
+
