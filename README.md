@@ -5,7 +5,7 @@ al controllo del personaggio, basato sulla fisica ragdoll. Il giocatore controll
 metri su una pista. Il movimento del corridore è controllato tramite combinazioni dei
 tasti Q, W, O, P, da cui il nome del gioco. I primi due tasti controllano i muscoli delle
 cosce; i restanti due controllano i muscoli dei polpacci. L’obiettivo è quello di sincronizzare i movimenti per far percorrere al personaggio 100 metri, in modo veloce, fluido e senza cadute. Gli algoritmi implementati e valutati sono 
-**Monte-Carlo, TD(0), SARSA e SARSA(λ).**
+**Monte-Carlo, SARSA, SARSA(λ)** e **Q-Learning**.
 
 ![QWOP in esecuzione](imgs/screen_browser.png)
 
